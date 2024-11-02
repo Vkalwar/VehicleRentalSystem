@@ -1,16 +1,21 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate  # Import Flask-Migrate
 import os
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
 # Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///vehicles.db')
+# Adjusted to use the path to the SQLite database in the instance folder
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///instance/vehicles.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'uploads'  # Folder for uploaded images
 app.secret_key = 'your_secret_key'  # Required for flashing messages
+
+# Initialize database and migration
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 # Ensure the upload folder exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
@@ -116,6 +121,4 @@ def home():
     return render_template('home.html')  # Render a home page template
 
 if __name__ == '__main__':
-    with app.app_context():  # Create an application context
-        db.create_all()  # Create database and tables
     app.run(debug=True)
