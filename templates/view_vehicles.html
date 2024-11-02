@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mt-4 text-center">Available Vehicles</h2>
+
+<div class="container">
+    {% if vehicles|length == 0 %}
+        <div class="alert alert-warning text-center">
+            No vehicles available.
+        </div>
+    {% else %}
+        <div class="row">
+            {% for vehicle in vehicles %}
+            <div class="col-md-4 mb-4">
+                <div class="card vehicle-card">
+                    <img src="{{ url_for('uploaded_file', filename=vehicle.image_file) }}" alt="Vehicle Image" class="card-img-top" style="height: 300px; object-fit: cover;">
+
+                    <div class="card-body">
+                        <h5 class="card-title">{{ vehicle.model_name }}</h5>
+                        <p class="card-text"><strong>Plate Number:</strong> {{ vehicle.plate_number }}</p>
+                        <p class="card-text"><strong>Rent Per Day:</strong> ₹{{ vehicle.rent_per_day }}</p>
+                        <p class="card-text"><strong>Passenger Capacity:</strong> {{ vehicle.passenger_capacity }}</p>
+                        <p class="card-text"><strong>Ratings:</strong> {{ vehicle.ratings if vehicle.ratings else 'N/A' }}</p>
+                        <p class="card-text">
+                            <strong>Available:</strong> 
+                            <span class="{{ 'text-danger' if not vehicle.availability else 'text-success' }}">
+                                {{ 'No' if not vehicle.availability else 'Yes' }}
+                            </span>
+                        </p>
+                        <a href="/update_vehicle/{{ vehicle.id }}" class="btn btn-warning btn-sm">Update</a>
+                        <form action="{{ url_for('delete_vehicle', id=vehicle.id) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this vehicle?');">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

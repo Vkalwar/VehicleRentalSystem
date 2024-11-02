@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mt-4">Add New Vehicle</h2>
+<form action="/add_vehicle" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="model_name">Model Name:</label>
+        <input type="text" class="form-control" id="model_name" name="model_name" required>
+    </div>
+    <div class="form-group">
+        <label for="plate_number">Plate Number:</label>
+        <input type="text" class="form-control" id="plate_number" name="plate_number" required>
+    </div>
+    <div class="form-group">
+        <label for="image">Image:</label>
+        <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+    </div>
+    <div class="form-group">
+        <label for="rent_per_day">Rent Per Day (₹):</label>
+        <input type="number" class="form-control" id="rent_per_day" name="rent_per_day" required>
+    </div>
+    <div class="form-group">
+        <label for="passenger_capacity">Passenger Capacity:</label>
+        <input type="number" class="form-control" id="passenger_capacity" name="passenger_capacity" required>
+    </div>
+    <div class="form-group">
+        <label for="ratings">Ratings:</label>
+        <input type="number" step="0.1" max="5" class="form-control" id="ratings" name="ratings" required>
+    </div>
+    <div class="form-group">
+        <label for="availability">Available:</label>
+        <select class="form-control" id="availability" name="availability">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Vehicle</button>
+</form>
+{% endblock %}

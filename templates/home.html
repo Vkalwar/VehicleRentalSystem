@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Rental System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        /* Navigation Bar */
+        nav {
+            background-color: #003161;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        nav .navbar-brand {
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+        }
+        nav .nav-links {
+            display: flex;
+        }
+        nav .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            margin-left: 10px;
+        }
+        nav .nav-links a:hover {
+            text-decoration: underline;
+        }
+        /* Header */
+        .header-text {
+            font-size: 25px;
+            text-align: center;
+            margin: 20px 0;
+            color: #AF1740;
+        }
+        /* Banner Image */
+        .banner-image {
+            width: 100%;
+            height: auto;
+            min-height: 300px;
+            object-fit: cover;
+        }
+        /* About Section */
+        .about-section {
+            margin: 20px 0;
+            text-align: center;
+            color:#10375C;
+        }
+        /* Vehicle Images */
+        .vehicle-images {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        .vehicle-images div {
+            text-align: center;
+            margin: 10px;
+            color:#C62E2E;
+        }
+        .vehicle-images img {
+            width: 200px; /* Set a fixed width for the vehicle images */
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            
+        }
+        /* Footer */
+        footer {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #4A628A;
+            color: white;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a class="navbar-brand" href="/">Vehicle Rental System</a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/add_vehicle">Add Vehicle</a>
+            <a href="/vehicles">View Vehicles</a>
+        </div>
+    </nav>
+    
+    <h1 class="header-text">Welcome to the Vehicle Rental System</h1>
+    
+    <!-- Banner Image -->
+    <img src="images/car3.jpeg" class="banner-image" alt="Vehicle Rental Banner">
+    
+    <div class="about-section">
+        <h3>About Vehicle Rental System</h3>
+        <p>This system allows you to rent various types of vehicles easily and efficiently. Whether you need a bike or a car, we've got you covered!</p>
+    </div>
+
+    <div class="vehicle-images">
+        <div>
+            <img src="images/vehicle1.jpg" alt="Vehicle 1">
+            <h5>Vehicle 1</h5>
+        </div>
+        <div>
+            <img src="images/vehicle2.jpg" alt="Vehicle 2">
+            <h5>Vehicle 2</h5>
+        </div>
+        <div>
+            <img src="images/vehicle3.jpg" alt="Vehicle 3">
+            <h5>Vehicle 3</h5>
+        </div>
+        <div>
+            <img src="images/vehicle4.jpg" alt="Vehicle 4">
+            <h5>Vehicle 4</h5>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2024 Vehicle Rental System. All rights reserved.</p>
+    </footer>
+
+    <div class="mt-4">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
