@@ -1,20 +1,16 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 import os
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
 # Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///instance/vehicles.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/vehicles.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'uploads'  
-app.secret_key = os.getenv('SECRET_KEY', 'your_secret_key')  # Use an environment variable for production
-
-# Initialize database and migration
+app.config['UPLOAD_FOLDER'] = 'uploads'  # Folder for uploaded images
+app.secret_key = 'your_secret_key'  # Required for flashing messages
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)
 
 # Ensure the upload folder exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
@@ -41,37 +37,35 @@ def uploaded_file(filename):
 @app.route('/add_vehicle', methods=['GET', 'POST'])
 def add_vehicle():
     if request.method == 'POST':
-        try:
-            model_name = request.form['model_name']
-            plate_number = request.form['plate_number']
-            rent_per_day = float(request.form['rent_per_day'])
-            passenger_capacity = int(request.form['passenger_capacity'])
-            ratings = float(request.form['ratings']) if request.form['ratings'] else None
-            availability = request.form['availability'] == 'true'
+        model_name = request.form['model_name']
+        plate_number = request.form['plate_number']
+        rent_per_day = float(request.form['rent_per_day'])  # Convert to float
+        passenger_capacity = int(request.form['passenger_capacity'])  # Convert to int
+        ratings = float(request.form['ratings']) if request.form['ratings'] else None
+        availability = request.form['availability'] == 'true'
 
-            # Handle image upload
-            image = request.files['image']
-            if image and allowed_file(image.filename):
-                image_filename = secure_filename(image.filename)
-                image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
+        # Handle image upload
+        image = request.files['image']
+        if image and allowed_file(image.filename):
+            image_filename = secure_filename(image.filename)
+            image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
 
-                new_vehicle = Vehicle(
-                    model_name=model_name,
-                    plate_number=plate_number,
-                    image_file=image_filename,
-                    rent_per_day=rent_per_day,
-                    passenger_capacity=passenger_capacity,
-                    ratings=ratings,
-                    availability=availability
-                )
-                db.session.add(new_vehicle)
-                db.session.commit()
-                flash('Vehicle added successfully!', 'success')
-                return redirect(url_for('get_vehicles'))
-            else:
-                flash('Invalid image file. Please upload a valid image.', 'danger')
-        except Exception as e:
-            flash(f'Error adding vehicle: {str(e)}', 'danger')
+            new_vehicle = Vehicle(
+                model_name=model_name,
+                plate_number=plate_number,
+                image_file=image_filename,
+                rent_per_day=rent_per_day,
+                passenger_capacity=passenger_capacity,
+                ratings=ratings,
+                availability=availability
+            )
+            db.session.add(new_vehicle)
+            db.session.commit()
+            flash('Vehicle added successfully!', 'success')
+            return redirect(url_for('get_vehicles'))
+        else:
+            flash('Invalid image file. Please upload a valid image.', 'danger')
+
     return render_template('add_vehicle.html')
 
 @app.route('/vehicles', methods=['GET'])
@@ -84,37 +78,34 @@ def update_vehicle(id):
     vehicle = Vehicle.query.get_or_404(id)
 
     if request.method == 'POST':
-        try:
-            vehicle.model_name = request.form['model_name']
-            vehicle.plate_number = request.form['plate_number']
-            vehicle.rent_per_day = float(request.form['rent_per_day'])
-            vehicle.passenger_capacity = int(request.form['passenger_capacity'])
-            vehicle.ratings = float(request.form['ratings']) if request.form['ratings'] else None
-            vehicle.availability = request.form['availability'] == 'true'
+        vehicle.model_name = request.form['model_name']
+        vehicle.plate_number = request.form['plate_number']
+        vehicle.rent_per_day = float(request.form['rent_per_day'])
+        vehicle.passenger_capacity = int(request.form['passenger_capacity'])
+        vehicle.ratings = float(request.form['ratings']) if request.form['ratings'] else None
+        vehicle.availability = request.form['availability'] == 'true'
 
-            # Handle image upload
-            if 'image' in request.files:
-                image = request.files['image']
-                if image and allowed_file(image.filename):
-                    image_filename = secure_filename(image.filename)
-                    image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
-                    vehicle.image_file = image_filename
+        # Handle image upload
+        if 'image' in request.files:
+            image = request.files['image']
+            if image and allowed_file(image.filename):
+                image_filename = secure_filename(image.filename)
+                image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
+                vehicle.image_file = image_filename
 
-            db.session.commit()
-            flash('Vehicle updated successfully!', 'success')
-            return redirect(url_for('get_vehicles'))
-        except Exception as e:
-            flash(f'Error updating vehicle: {str(e)}', 'danger')
+        db.session.commit()
+        flash('Vehicle updated successfully!', 'success')
+        return redirect(url_for('get_vehicles'))
 
     return render_template('update_vehicle.html', vehicle=vehicle)
 
 @app.route('/delete_vehicle/<int:id>', methods=['POST'])
 def delete_vehicle(id):
-    vehicle = Vehicle.query.get_or_404(id)
-    db.session.delete(vehicle)
-    db.session.commit()
-    flash('Vehicle deleted successfully!', 'success')
-    return redirect(url_for('get_vehicles'))
+    vehicle = Vehicle.query.get_or_404(id)  # Fetch vehicle or return 404
+    db.session.delete(vehicle)  # Remove vehicle from session
+    db.session.commit()  # Commit the transaction
+    flash('Vehicle deleted successfully!', 'success')  # Flash success message
+    return redirect(url_for('get_vehicles'))  # Redirect back to vehicles list
 
 def allowed_file(filename):
     allowed_extensions = {'png', 'jpg', 'jpeg', 'gif'}
@@ -122,7 +113,9 @@ def allowed_file(filename):
 
 @app.route('/', methods=['GET'])
 def home():
-    return render_template('home.html')
+    return render_template('home.html')  # Render a home page template
 
 if __name__ == '__main__':
+    with app.app_context():  # Create an application context
+        db.create_all()  # Create database and tables
     app.run(debug=True)
